@@ -17,31 +17,20 @@ class Manager {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         
-        let (data, _) = try await URLSession.shared.data(for: request)
-        let decoder = JSONDecoder()
-        let characterResponse = try decoder.decode(RMCharacter.self, from: data)
-        return characterResponse.results
-//        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-//            
-//            if let error {
-//                print("Error while fetching data:", error)
-//                return
-//            }
-//            
-//            guard let data else {
-//                print("teste","teste")
-//                return
-//            }
-//            // Decodifica o JSON em um objeto `RMCharacter`
-//            do {
-//                let decoder = JSONDecoder()
-//                let characterResponse = try decoder.decode(RMCharacter.self, from: data)
-//                print(characterResponse)
-//            } catch {
-//                print("Error while decoding data:", error)
-//            }
-//        }
-//        task.resume()
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let decoder = JSONDecoder()
+            let characterResponse = try decoder.decode(GetAllCharactersResponse.self, from: data)
+            return characterResponse.results
+        } catch {
+            throw ManagerError.defaultError
+        }
+
     }
     
+}
+
+enum ManagerError: Error {
+    case defaultError
+    case decodeError
 }

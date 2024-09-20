@@ -7,12 +7,7 @@
 
 import Foundation
 
-struct RMCharacter: Codable {
-    let info: RMCharacterInfo
-    let results: Array<RMCharacterResults>
-}
-
-struct RMCharacterInfo: Codable {
+struct RMInfo: Codable {
     let count: Int
     let pages: Int
     let next: String?
@@ -21,16 +16,28 @@ struct RMCharacterInfo: Codable {
 struct RMCharacterResults: Codable {
     let id: Int
     let name: String
-    let status: String
+    let status: RMCharacterStatus
     let species: String
     let type: String
-    let gender: String
+    let gender: RMCharacterGender
     let origin: RMCharacterResultsOrigin
     let location: RMCharacterResultsLocation
     let image: String
     let episode: Array<String>
     let url: String
     let created: String
+}
+
+enum RMCharacterStatus: String, Codable {
+    case alive = "Alive"
+    case dead = "Dead"
+    case `unknown` = "unknown"
+}
+
+enum RMCharacterGender: String, Codable {
+    case male = "Male"
+    case famale = "Female"
+    case `unknown` = "unknown"
 }
 
 struct RMCharacterResultsOrigin: Codable {

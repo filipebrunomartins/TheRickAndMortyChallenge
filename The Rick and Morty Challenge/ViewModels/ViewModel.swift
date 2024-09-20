@@ -17,11 +17,10 @@ class ViewModel {
     }
     
     func loadCharacters() async {
-            do {
-                self.characters = try await manager.loadCharacter()
-                // Atualize a UI ou faça qualquer outra coisa necessária
-            } catch {
-                print("Error fetching characters:", error)
-            }
+        do {
+            self.characters = try await manager.loadCharacter()
+        } catch {
+            print("Error fetching characters:", error)
+        }
     }
 }
