@@ -14,6 +14,7 @@ final class CharacterListView: UIView {
     
     private let spinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView(style: .large)
+        spinner.hidesWhenStopped = true
         spinner.translatesAutoresizingMaskIntoConstraints = false
         return spinner
     }()
@@ -21,7 +22,7 @@ final class CharacterListView: UIView {
     private let colletionView: UICollectionView = {
        let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.isHidden = true
         collectionView.alpha = 0
@@ -42,6 +43,7 @@ final class CharacterListView: UIView {
         addConstraints()
         
         spinner.startAnimating()
+        viewModel.delegate = self
         viewModel.fetchCharacceters()
         setUpColletionView()
     }
@@ -67,16 +69,16 @@ final class CharacterListView: UIView {
     private func setUpColletionView() {
         colletionView.dataSource = viewModel
         colletionView.delegate = viewModel
-        
-        DispatchQueue.main.asyncAfter(deadline: .now()+2, execute: {
-            self.spinner.stopAnimating()
-            
-            self.colletionView.isHidden = false
+    }
+}
+
+extension CharacterListView: CharaceterListViewViewModelDelegate {
+    func didLoadInitialCharacters() {
+        spinner.stopAnimating()
+        colletionView.isHidden = false
+        colletionView.reloadData() //Initial fetch
+        UIView.animate(withDuration: 0.4, animations: {
             self.colletionView.alpha = 1
-            
-            UIView.animate(withDuration: 0.4, animations: {
-                self.colletionView.alpha = 1
-            })
         })
     }
 }
