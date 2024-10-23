@@ -8,18 +8,16 @@
 import UIKit
 
 // View que mostra a lista de Characters (load, error)
-final class CharacterListView: UIView {
+final class CharacterListView: RMView {
     
-    private let viewModel = CharaceterListViewViewModel()
-    
-    private let spinner: UIActivityIndicatorView = {
+    let spinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView(style: .large)
         spinner.hidesWhenStopped = true
         spinner.translatesAutoresizingMaskIntoConstraints = false
         return spinner
     }()
     
-    private let colletionView: UICollectionView = {
+    let colletionView: UICollectionView = {
        let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10)
@@ -31,28 +29,38 @@ final class CharacterListView: UIView {
             CharacterCollectionViewCell.self,
             forCellWithReuseIdentifier: CharacterCollectionViewCell.cellIdentifier
         )
+        collectionView.register(
+            FooterLoadingCollectionReusableView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+            withReuseIdentifier: FooterLoadingCollectionReusableView.identifier
+        )
         
         return collectionView
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        translatesAutoresizingMaskIntoConstraints = false
-        addSubviews(colletionView, spinner)
-        
-        addConstraints()
-        
-        spinner.startAnimating()
-        viewModel.delegate = self
-        viewModel.fetchCharacceters()
-        setUpColletionView()
+    init(
+        cvDataSource: UICollectionViewDataSource,
+        cvDelegate: UICollectionViewDelegate
+    ) {
+        super.init(frame: UIScreen.main.bounds)
+        self.colletionView.delegate = cvDelegate
+        self.colletionView.dataSource = cvDataSource
     }
     
     required init?(coder: NSCoder) {
         fatalError("Unsupported")
     }
     
-    private func addConstraints() {
+    override func configureAdditionalSettings() {
+        self.backgroundColor = .systemBackground
+        spinner.startAnimating()
+    }
+    
+    override func addSubviews() {
+        addSubviews(colletionView, spinner)
+    }
+    
+    override func addConstraints() {
         NSLayoutConstraint.activate([
             spinner.widthAnchor.constraint(equalToConstant: 100),
             spinner.heightAnchor.constraint(equalToConstant: 100),
@@ -64,21 +72,5 @@ final class CharacterListView: UIView {
             colletionView.rightAnchor.constraint(equalTo: rightAnchor),
             colletionView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
-    }
-    
-    private func setUpColletionView() {
-        colletionView.dataSource = viewModel
-        colletionView.delegate = viewModel
-    }
-}
-
-extension CharacterListView: CharaceterListViewViewModelDelegate {
-    func didLoadInitialCharacters() {
-        spinner.stopAnimating()
-        colletionView.isHidden = false
-        colletionView.reloadData() //Initial fetch
-        UIView.animate(withDuration: 0.4, animations: {
-            self.colletionView.alpha = 1
-        })
     }
 }

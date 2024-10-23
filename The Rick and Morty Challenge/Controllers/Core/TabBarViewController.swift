@@ -15,7 +15,12 @@ final class TabBarViewController: UITabBarController {
     }
     
     private func setUpTabs(){
+        // MARK - INICIALIZA VIEW MODELS
+        let characterVM = CharaceterListViewViewModel()
+        
+        
         let characterVC = CharacterViewController()
+        characterVC.viewModel = characterVM
         let locationVC = LocationViewController()
         let episodeVC = EpisodeViewController()
         let settingsVC = SettingsViewController()
